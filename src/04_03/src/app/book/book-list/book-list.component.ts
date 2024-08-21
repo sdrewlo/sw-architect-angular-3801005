@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BookApiService } from '../book-api.service';
 import { Book } from '../models';
 import { BookCardComponent } from "../book-card/book-card.component";
 import { AsyncPipe, NgForOf } from "@angular/common";
+import { Store } from '@ngrx/store';
+import { bookCollection } from '../store/book-collection.selectors';
 
 @Component({
     selector: 'ws-book-list',
-    styleUrls: [ './book-list.component.scss' ],
+    styleUrls: ['./book-list.component.scss'],
     standalone: true,
     imports: [
         BookCardComponent,
@@ -17,9 +18,11 @@ import { AsyncPipe, NgForOf } from "@angular/common";
     templateUrl: 'book-list.component.html'
 })
 export class BookListComponent {
-    books$: Observable<Book[]>;
+    books$: Observable<ReadonlyArray<Book>>;
 
-    constructor(private bookData: BookApiService) {
-        this.books$ = this.bookData.getAll();
+    constructor(private store: Store) {
+        this.books$ = this.store.select(bookCollection);
     }
 }
+
+// want to

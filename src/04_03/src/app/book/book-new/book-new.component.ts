@@ -7,10 +7,12 @@ import { Router, RouterLink } from "@angular/router";
 import { MatInputModule } from "@angular/material/input";
 import { MatButtonModule } from "@angular/material/button";
 import { NgIf } from "@angular/common";
+import { Store } from '@ngrx/store';
+import { createBookStart } from '../store/book-collection.actions';
 
 @Component({
     selector: 'ws-book-new',
-    styleUrls: [ './book-new.component.scss' ],
+    styleUrls: ['./book-new.component.scss'],
     standalone: true,
     imports: [
         ReactiveFormsModule,
@@ -24,22 +26,28 @@ import { NgIf } from "@angular/common";
 export class BookNewComponent {
     form: FormGroup;
 
-    constructor(private fb: FormBuilder, private bookApi: BookApiService, private router: Router) {
+    constructor(
+        private fb: FormBuilder,
+        private store: Store,
+        private bookApi: BookApiService,
+        private router: Router
+    ) {
         this.form = this.buildForm();
     }
 
     create() {
         const book = { ...bookNa(), ...this.form.value };
 
-        this.bookApi.create(book).pipe(take(1)).subscribe(() => this.router.navigate([ '/books' ]));
+        this.store.dispatch(createBookStart({ book }));
+        //this.bookApi.create(book).pipe(take(1)).subscribe(() => this.router.navigate(['/books']));
     }
 
     private buildForm(): FormGroup {
         return this.fb.group({
-            isbn: [ '', [ Validators.required, Validators.minLength(3) ] ],
-            title: [ '', Validators.required ],
-            author: [ '', Validators.required ],
-            cover: [ '' ]
+            isbn: ['', [Validators.required, Validators.minLength(3)]],
+            title: ['', Validators.required],
+            author: ['', Validators.required],
+            cover: ['']
         });
     }
 }
